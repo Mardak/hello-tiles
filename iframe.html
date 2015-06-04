@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+<style>
+* {
+  cursor: pointer;
+  left: 0;
+  margin: 0;
+  position: absolute;
+  top: 0;
+  width: 280px;
+}
+
+body:hover .base,
+.hover {
+  display: none;
+}
+
+.base,
+body:hover .hover {
+  display: block;
+}
+
+img {
+  height: 190px;
+}
+
+p {
+  background-color: #F2F2F2;
+  color: ##5C5C5C;
+  font-family: Lucida Grande;
+  font-size: 13px;
+  line-height: 24px;
+  text-align: center;
+  top: 190px;
+}
+
+p.sponsored::after {
+  border: 1px solid #DCDCDC;
+  border-radius: 2px;
+  content: "SPONSORED";
+  font-family: Arial;
+  font-size: 10px;
+  line-height: 17px;
+  padding: 0 4px;
+  position: absolute;
+  right: 2px;
+  top: 2px;
+}
+</style>
+<script>
+function onLoad() {
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "desktop_tile_index_v3.json");
+  xhr.onload = onIndex;
+  xhr.send();
+};
+
+function onIndex() {
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", JSON.parse(this.responseText)["US/en-US"].legacy);
+  xhr.onload = onLinks;
+  xhr.send();
+}
+
+function onLinks() {
+  var links = JSON.parse(this.responseText)["en-US"];
+  var link = links[Math.floor(Math.random() * links.length)];
+
+  document.body.style.backgroundColor = link.bgColor;
+
+  var isEnhanced = link.enhancedImageURI != null;
+
+  var baseImage = document.body.appendChild(document.createElement("img"));
+  baseImage.src = link.enhancedImageURI || link.imageURI;
+  baseImage.className = isEnhanced ? "base" : "";
+
+  var hoverImage = document.body.appendChild(document.createElement("img"));
+  hoverImage.src = link.imageURI;
+  hoverImage.className = isEnhanced ? "hover" : "";
+
+  var titleText = document.body.appendChild(document.createElement("p"));
+  titleText.textContent = link.title;
+  titleText.className = link.type;
+
+  addEventListener("click", function() {
+    open(link.url);
+  });
+}
+
+addEventListener("load", onLoad);
+</script>
+</head>
+<body>
+</body>
+</html>
