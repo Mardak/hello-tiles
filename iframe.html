@@ -49,6 +49,9 @@ p.sponsored::after {
 }
 </style>
 <script>
+const LOCALE = navigator.language.slice(0, 2) + navigator.language.slice(2).toUpperCase();
+const ONYX_BASE = "https://tiles.services.mozilla.com/v3/links/";
+
 function onLoad() {
   var xhr = new XMLHttpRequest();
   xhr.open("GET", "desktop_tile_index_v3.json");
@@ -83,9 +86,27 @@ function onLinks() {
   titleText.textContent = link.title;
   titleText.className = link.type;
 
+  var id = link.directoryId;
   addEventListener("click", function() {
     open(link.url);
+    ping("click", id);
   });
+
+  ping("view", id);
+}
+
+function ping(action, id) {
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", ONYX_BASE + (action == "view" ? "view" : "click"));
+
+  // Package up the data and include the index of the action
+  var data = {
+    locale: LOCALE,
+    tiles: [{id: id}]
+  };
+  data[action] = 0;
+
+  xhr.send(JSON.stringify(data));
 }
 
 addEventListener("load", onLoad);
