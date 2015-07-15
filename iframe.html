@@ -49,25 +49,19 @@ p.sponsored::after {
 }
 </style>
 <script>
+const CHANNEL = "hello";
 const LOCALE = navigator.language.slice(0, 2) + navigator.language.slice(2).toUpperCase();
 const ONYX_BASE = "https://tiles.services.mozilla.com/v3/links/";
 
 function onLoad() {
   var xhr = new XMLHttpRequest();
-  xhr.open("GET", "desktop_tile_index_v3.json");
-  xhr.onload = onIndex;
-  xhr.send();
-};
-
-function onIndex() {
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", JSON.parse(this.responseText)["US/en-US"].legacy);
+  xhr.open("GET", ONYX_BASE + "fetch/" + LOCALE + "/" + CHANNEL);
   xhr.onload = onLinks;
   xhr.send();
 }
 
 function onLinks() {
-  var links = JSON.parse(this.responseText)["en-US"];
+  var links = JSON.parse(this.responseText).directory;
   var link = links[Math.floor(Math.random() * links.length)];
 
   document.body.style.backgroundColor = link.bgColor;
