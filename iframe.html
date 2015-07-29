@@ -102,7 +102,12 @@ function onLinks() {
   titleText.className = link.type;
 
   var id = link.directoryId;
-  addEventListener("click", function() {
+  addEventListener("click", function(event) {
+    // Ignore clicks that open context menu
+    if (event.button == 2 || event.which == 3) {
+      return;
+    }
+
     open(link.url);
     ping("click", id);
   });
