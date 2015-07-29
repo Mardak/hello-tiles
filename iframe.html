@@ -53,17 +53,33 @@ p.sponsored::after {
 </style>
 <script>
 const CHANNEL = "hello";
+const FALLBACK_LOCALE = "zu";
 const LOCALE = navigator.language.slice(0, 2) + navigator.language.slice(2).toUpperCase();
 const ONYX_BASE = "https://tiles.services.mozilla.com/v3/links/";
 
 function onLoad() {
+  fetchLinks(LOCALE);
+}
+
+function fetchLinks(locale) {
+  // Remember what locale we requested for later inspection
   var xhr = new XMLHttpRequest();
-  xhr.open("GET", ONYX_BASE + "fetch/" + LOCALE + "/" + CHANNEL);
+  xhr.locale = locale;
+
+  xhr.open("GET", ONYX_BASE + "fetch/" + locale + "/" + CHANNEL);
   xhr.onload = onLinks;
   xhr.send();
 }
 
 function onLinks() {
+  // For locales with no content, fall back to a locale with default tiles
+  if (this.status == 204) {
+    if (this.locale != FALLBACK_LOCALE) {
+      fetchLinks(FALLBACK_LOCALE);
+    }
+    return;
+  }
+
   var links = JSON.parse(this.responseText).directory;
   var link = links[Math.floor(Math.random() * links.length)];
 
