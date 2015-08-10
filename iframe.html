@@ -110,6 +110,7 @@ function onLinks() {
 
     open(link.url);
     ping("click", id);
+    parent.postMessage("tile-click", "*");
   });
 
   ping("view", id);
